@@ -1,0 +1,31 @@
+# WhatsApp RPA - Requirements
+# Install with: pip install -r requirements.txt
+
+# Web UI (Flask + SocketIO)
+flask>=3.0.0
+flask-socketio>=5.3.6
+flask-cors>=4.0.0
+python-engineio>=4.9.0
+python-socketio>=5.11.0
+
+# GUI Framework
+customtkinter==5.2.2
+Pillow>=10.0.0
+
+# Browser Automation
+selenium>=4.18.0
+webdriver-manager>=4.0.1                   
+selenium-wire>=5.1.0          # For proxy auth
+selenium-stealth>=1.0.6       # For advanced fingerprint stealth
+
+# Data Processing
+pandas>=2.0.0
+openpyxl>=3.1.2
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+pyperclip>=1.8.2        # Clipboard paste for URLs in messages
+
+# Optional: For scheduled messaging
+schedule>=1.2.1

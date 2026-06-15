@@ -1,0 +1,45 @@
+# render.yaml — Render Blueprint
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Deploy steps:
+#   1. Push this project to a GitHub repo
+#   2. On Render dashboard → New → Blueprint
+#   3. Connect the GitHub repo
+#   4. Render reads this file and creates the service automatically
+
+services:
+  - type: web
+    name: whatsapp-rpa-automator
+    runtime: docker                   # Use our Dockerfile (includes Chrome + Xvfb)
+    dockerfilePath: ./Dockerfile
+    plan: free                        # Free tier (512 MB RAM, sleeps after 15 min)
+    region: oregon                    # US-West — fastest Render free region
+
+    # ── Health check ─────────────────────────────────────────────────────────
+    # Render pings this URL to confirm the service is alive
+    healthCheckPath: /api/status
+
+    # ── Environment variables ─────────────────────────────────────────────────
+    envVars:
+      - key: PYTHON_ENV
+        value: production
+
+      - key: DISPLAY
+        value: ":99"
+
+      - key: FLASK_ENV
+        value: production
+
+      # Suppress webdriver-manager noise
+      - key: WDM_LOG
+        value: "0"
+      - key: WDM_LOG_LEVEL
+        value: "0"
+
+      # Prevent dbus errors from Chrome on Linux
+      - key: DBUS_SESSION_BUS_ADDRESS
+        value: /dev/null
+
+    # ── Auto-deploy ───────────────────────────────────────────────────────────
+    # Uncomment to disable auto-deploy on every git push:
+    # autoDeploy: false

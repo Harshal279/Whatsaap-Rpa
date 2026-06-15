@@ -1,0 +1,29 @@
+# WhatsApp RPA Automator — Render-only requirements
+# ──────────────────────────────────────────────────
+# Desktop UI packages (customtkinter, Pillow) are NOT included.
+# selenium-wire is NOT included (proxy-auth not needed on Render).
+# gunicorn + eventlet added for production-grade SocketIO.
+
+# ── Web server ─────────────────────────────────────────────────────────────────
+flask>=3.0.0
+flask-socketio>=5.3.6
+flask-cors>=4.0.0
+python-engineio>=4.9.0
+python-socketio>=5.11.0
+gunicorn==21.2.0
+eventlet>=0.35.2
+
+# ── Browser automation ─────────────────────────────────────────────────────────
+selenium>=4.18.0
+undetected-chromedriver>=3.5.5
+selenium-stealth>=1.0.6
+webdriver-manager>=4.0.1
+
+# ── Data processing ────────────────────────────────────────────────────────────
+pandas>=2.0.0
+openpyxl>=3.1.2
+
+# ── Utilities ──────────────────────────────────────────────────────────────────
+python-dotenv>=1.0.0
+requests>=2.31.0
+pyperclip>=1.8.2

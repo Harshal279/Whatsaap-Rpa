@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Session data — regenerated at runtime
+browser_profiles/
+uploads/
+logs/
+reports/
+user_settings.json
+
+# Development-only
+ui/
+*.md
+.gitignore
+sample_contacts*.xlsx
+setup.py
+cli.py
+
+# OS
+.DS_Store
+Thumbs.db

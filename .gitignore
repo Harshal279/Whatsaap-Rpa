@@ -1,0 +1,44 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# ── Browser session data (never commit — re-scan QR after each deploy) ────────
+browser_profiles/
+
+# ── User data ─────────────────────────────────────────────────────────────────
+uploads/
+logs/
+reports/
+user_settings.json
+
+# ── OS files ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Secrets / env ─────────────────────────────────────────────────────────────
+.env
+*.env.local
+*.env.production
+
+# ── Temporary ─────────────────────────────────────────────────────────────────
+*.tmp
+*.log

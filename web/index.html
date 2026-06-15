@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp RPA Automator</title>
+  <meta name="description" content="Automate WhatsApp Web messaging with Excel contacts — WhatsApp RPA Automator Web UI" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<!-- ───────── TOP NAV BAR ───────── -->
+<header class="navbar" id="navbar">
+  <div class="navbar-brand">
+    <span class="brand-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="14" fill="#22C55E" opacity="0.15"/>
+        <path d="M14 4C8.477 4 4 8.477 4 14c0 1.82.484 3.527 1.329 4.996L4 24l5.137-1.31A9.96 9.96 0 0014 24c5.523 0 10-4.477 10-10S19.523 4 14 4z" fill="#22C55E"/>
+        <path d="M11 10.5c-.3-.7-.6-.71-.88-.72H9.7c-.26 0-.68.1-.98.48-.3.38-1.14 1.12-1.14 2.72s1.16 3.16 1.32 3.38c.16.22 2.22 3.5 5.46 4.76 2.7 1.06 3.25.85 3.84.8.59-.06 1.9-.78 2.17-1.53.27-.75.27-1.39.19-1.53-.08-.14-.3-.22-.62-.38s-1.9-.94-2.19-1.04c-.3-.1-.52-.16-.73.16-.22.32-.84 1.04-.97 1.25-.14.22-.27.25-.5.08-.24-.16-1-.37-1.9-1.17-.7-.63-1.17-1.4-1.31-1.63-.14-.23-.01-.35.1-.47.1-.1.24-.27.36-.4.12-.14.16-.23.24-.38.08-.16.04-.3-.02-.42C11.88 12.67 11.3 11.2 11 10.5z" fill="white"/>
+      </svg>
+    </span>
+    <div>
+      <h1 class="brand-title">WhatsApp RPA Automator</h1>
+      <span class="brand-version">v2.0 — Web UI</span>
+    </div>
+  </div>
+  <div class="navbar-status" id="navStatus">
+    <span class="status-dot idle" id="statusDot"></span>
+    <span id="statusText">Ready</span>
+  </div>
+</header>
+
+<!-- ───────── MAIN LAYOUT ───────── -->
+<main class="app-layout" id="appLayout">
+
+  <!-- ═══════ LEFT SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Excel Upload -->
+    <section class="panel-section" id="excelSection">
+      <div class="section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Excel File</span>
+      </div>
+
+      <div class="drop-zone" id="excelDropZone" role="button" tabindex="0" aria-label="Upload Excel file">
+        <div class="drop-zone-inner" id="excelDropInner">
+          <svg class="drop-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p class="drop-label">Drop Excel / CSV here</p>
+          <p class="drop-sublabel">or click to browse</p>
+        </div>
+        <input type="file" id="excelInput" accept=".xlsx,.xls,.csv" hidden />
+      </div>
+
+      <div class="file-info hidden" id="excelFileInfo">
+        <div class="file-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+          <span id="excelFileName">—</span>
+        </div>
+        <button class="btn-icon-sm" id="excelReloadBtn" title="Reload file" aria-label="Reload Excel file">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+
+      <div class="contact-count hidden" id="contactCount">
+        <span class="count-number" id="contactCountNum">0</span>
+        <span class="count-label">contacts loaded</span>
+      </div>
+
+      <label class="checkbox-row" id="dedupRow">
+        <input type="checkbox" id="dedupCheck" />
+        <span class="checkbox-custom"></span>
+        <span>Remove duplicate numbers</span>
+      </label>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Browser -->
+    <section class="panel-section" id="browserSection">
+      <div class="section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>Browser</span>
+      </div>
+      <div class="select-wrapper">
+        <select id="browserSelect" class="select-input">
+          <!-- populated by JS -->
+        </select>
+        <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Sending Mode -->
+    <section class="panel-section" id="modeSection">
+      <div class="section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+        <span>Sending Mode</span>
+      </div>
+      <div class="mode-toggle" id="modeToggle" role="group" aria-label="Sending mode">
+        <button class="mode-btn active" id="modeKnown" data-mode="known">Known Contacts</button>
+        <button class="mode-btn" id="modeUnknown" data-mode="unknown">Unknown Contacts</button>
+      </div>
+      <p class="mode-desc" id="modeDesc">Uses Forward dialog. Best for existing contacts.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Attachment -->
+    <section class="panel-section" id="attachSection">
+      <div class="section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        <span>Attachment <em class="optional-tag">optional</em></span>
+      </div>
+
+      <div class="drop-zone attach-drop" id="attachDropZone" role="button" tabindex="0" aria-label="Upload attachment file">
+        <div class="drop-zone-inner" id="attachDropInner">
+          <svg class="drop-icon small" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p class="drop-label small">Image, video, PDF…</p>
+        </div>
+        <input type="file" id="attachInput" accept="image/*,video/*,.pdf,.docx,.xlsx,.pptx,.txt,.zip,.mp3,.ogg,.wav" hidden />
+      </div>
+
+      <div class="file-info hidden" id="attachFileInfo">
+        <div class="file-badge attach">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          <span id="attachFileName">—</span>
+        </div>
+        <button class="btn-icon-sm danger" id="attachClearBtn" title="Remove attachment" aria-label="Remove attachment">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Settings -->
+    <section class="panel-section settings-row-section">
+      <div class="section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        <span>Delay Settings</span>
+        <button class="btn-gear" id="openSettings" title="Open settings" aria-label="Open delay settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Action Buttons -->
+    <section class="panel-section action-section">
+      <button class="btn-primary btn-start" id="startBtn" aria-label="Start automation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        START
+      </button>
+      <div class="btn-row">
+        <button class="btn-secondary btn-pause" id="pauseBtn" disabled aria-label="Pause automation">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          PAUSE
+        </button>
+        <button class="btn-danger btn-stop" id="stopBtn" disabled aria-label="Stop automation">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16"/></svg>
+          STOP
+        </button>
+      </div>
+      <button class="btn-reports" id="reportsBtn" aria-label="View reports">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Reports
+      </button>
+    </section>
+
+  </aside>
+
+  <!-- ═══════ RIGHT MAIN PANEL ═══════ -->
+  <div class="main-panel" id="mainPanel">
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-card" id="statTotal">
+        <span class="stat-value" id="statTotalVal">0</span>
+        <span class="stat-label">TOTAL</span>
+      </div>
+      <div class="stat-card success" id="statSent">
+        <span class="stat-value" id="statSentVal">0</span>
+        <span class="stat-label">SENT</span>
+      </div>
+      <div class="stat-card danger" id="statFailed">
+        <span class="stat-value" id="statFailedVal">0</span>
+        <span class="stat-label">FAILED</span>
+      </div>
+      <div class="stat-card warning" id="statSkipped">
+        <span class="stat-value" id="statSkippedVal">0</span>
+        <span class="stat-label">SKIPPED</span>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-track" id="progressTrack" aria-label="Progress">
+      <div class="progress-bar" id="progressBar" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+      <span class="progress-label" id="progressLabel">0%</span>
+    </div>
+
+    <!-- Tab View -->
+    <div class="tab-container" id="tabContainer">
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" id="tabResults" role="tab" aria-selected="true" aria-controls="panelResults">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+          Results
+        </button>
+        <button class="tab-btn" id="tabConsole" role="tab" aria-selected="false" aria-controls="panelConsole">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          Console
+        </button>
+        <div class="tab-actions">
+          <button class="btn-clear" id="clearConsoleBtn" aria-label="Clear console">Clear</button>
+        </div>
+      </div>
+
+      <!-- Results Panel -->
+      <div class="tab-panel active" id="panelResults" role="tabpanel" aria-labelledby="tabResults">
+        <div class="results-empty" id="resultsEmpty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          <p>No results yet.<br/>Load contacts and click START.</p>
+        </div>
+        <table class="results-table" id="resultsTable" hidden>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Console Panel -->
+      <div class="tab-panel" id="panelConsole" role="tabpanel" aria-labelledby="tabConsole">
+        <div class="console-output" id="consoleOutput" aria-live="polite" aria-atomic="false"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══════ SETTINGS MODAL ═══════ -->
+<div class="modal-overlay hidden" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modal" id="settingsModal">
+    <div class="modal-header">
+      <div class="modal-title-row">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <h2 id="settingsTitle">Delay Settings</h2>
+      </div>
+      <button class="modal-close" id="settingsClose" aria-label="Close settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body" id="settingsBody">
+
+      <!-- Standard Delay -->
+      <div class="settings-group">
+        <div class="settings-group-label">Standard Delay</div>
+        <p class="settings-group-desc">Applied to most messages between sends.</p>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_delay_min">Min (sec)</label>
+            <input type="number" id="s_delay_min" class="settings-input" min="1" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_delay_max">Max (sec)</label>
+            <input type="number" id="s_delay_max" class="settings-input" min="1" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Warm-up Delay -->
+      <div class="settings-group">
+        <div class="settings-group-label">Warm-up Delay <span class="tag">(first N messages)</span></div>
+        <p class="settings-group-desc">Extra-long delays at the very start of a session.</p>
+        <div class="field-group single">
+          <label for="s_warmup_count">Number of warm-up messages</label>
+          <input type="number" id="s_warmup_count" class="settings-input" min="0" step="1" />
+        </div>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_warmup_min">Min (sec)</label>
+            <input type="number" id="s_warmup_min" class="settings-input" min="1" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_warmup_max">Max (sec)</label>
+            <input type="number" id="s_warmup_max" class="settings-input" min="1" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Occasional Pause -->
+      <div class="settings-group">
+        <div class="settings-group-label">Occasional Pause <span class="tag">(every Nth message)</span></div>
+        <p class="settings-group-desc">Fires a longer pause once every N messages.</p>
+        <div class="field-group single">
+          <label for="s_occasional_n">Trigger every N messages</label>
+          <input type="number" id="s_occasional_n" class="settings-input" min="1" step="1" />
+        </div>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_occasional_min">Min (sec)</label>
+            <input type="number" id="s_occasional_min" class="settings-input" min="1" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_occasional_max">Max (sec)</label>
+            <input type="number" id="s_occasional_max" class="settings-input" min="1" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Break -->
+      <div class="settings-group">
+        <div class="settings-group-label">Batch Break <span class="tag">(every 15–25 messages)</span></div>
+        <p class="settings-group-desc">Short session rest after a randomised batch.</p>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_batch_min">Min (sec)</label>
+            <input type="number" id="s_batch_min" class="settings-input" min="1" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_batch_max">Max (sec)</label>
+            <input type="number" id="s_batch_max" class="settings-input" min="1" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Deep Rest -->
+      <div class="settings-group">
+        <div class="settings-group-label">Deep Rest <span class="tag">(triggers after 30–70 messages)</span></div>
+        <p class="settings-group-desc">Simulates end-of-day break to avoid spam detection.</p>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_deep_min">Min (sec)</label>
+            <input type="number" id="s_deep_min" class="settings-input" min="1" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_deep_max">Max (sec)</label>
+            <input type="number" id="s_deep_max" class="settings-input" min="1" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Forward Batch -->
+      <div class="settings-group">
+        <div class="settings-group-label">Forward Batch</div>
+        <p class="settings-group-desc">Randomised batch size for native forward (Known mode only).</p>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_fwd_min">Min</label>
+            <input type="number" id="s_fwd_min" class="settings-input" min="1" max="5" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_fwd_max">Max</label>
+            <input type="number" id="s_fwd_max" class="settings-input" min="1" max="5" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Retry -->
+      <div class="settings-group">
+        <div class="settings-group-label">Retry</div>
+        <p class="settings-group-desc">How many retries and how long to wait between them.</p>
+        <div class="minmax-row">
+          <div class="field-group">
+            <label for="s_retry">Retry count</label>
+            <input type="number" id="s_retry" class="settings-input" min="0" step="1" />
+          </div>
+          <div class="field-group">
+            <label for="s_retry_delay">Retry delay (sec)</label>
+            <input type="number" id="s_retry_delay" class="settings-input" min="1" step="1" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" id="settingsReset">Reset Defaults</button>
+      <div class="modal-footer-right">
+        <button class="btn-ghost" id="settingsCancel">Cancel</button>
+        <button class="btn-primary" id="settingsSave">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ REPORTS MODAL ═══════ -->
+<div class="modal-overlay hidden" id="reportsOverlay" role="dialog" aria-modal="true" aria-labelledby="reportsTitle">
+  <div class="modal modal-reports" id="reportsModal">
+    <div class="modal-header">
+      <div class="modal-title-row">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <h2 id="reportsTitle">Delivery Reports</h2>
+      </div>
+      <button class="modal-close" id="reportsClose" aria-label="Close reports">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="reportsList"></div>
+      <div class="reports-empty hidden" id="reportsEmpty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <p>No reports yet. Run automation to generate reports.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ QR CODE SCANNER OVERLAY (shown on Render when browser awaits scan) ═══════ -->
+<div class="modal-overlay hidden" id="qrOverlay" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+  <div class="modal modal-qr" id="qrModal">
+    <div class="modal-header">
+      <div class="modal-title-row">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M17 20h.01M20 14h.01M20 17h.01M20 20h.01"/></svg>
+        <h2 id="qrTitle">Scan WhatsApp QR Code</h2>
+      </div>
+      <div class="qr-live-badge">
+        <span class="qr-dot"></span>
+        LIVE
+      </div>
+    </div>
+
+    <div class="modal-body qr-body">
+      <p class="qr-instruction">
+        Open <strong>WhatsApp</strong> on your phone → Menu → <strong>Linked Devices</strong> → <strong>Link a Device</strong> → scan the code below.
+      </p>
+
+      <div class="qr-screen-wrap" id="qrScreenWrap">
+        <img id="qrScreenshot" src="" alt="WhatsApp QR Code" class="qr-screenshot" />
+        <div class="qr-loading" id="qrLoading">
+          <div class="spinner"></div>
+          <span>Loading browser screenshot…</span>
+        </div>
+      </div>
+
+      <p class="qr-footer-note">
+        Screenshot auto-refreshes every 2.5 seconds. Click Refresh for an immediate update.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <span class="qr-status-text" id="qrStatusText">Waiting for QR scan…</span>
+      <div class="modal-footer-right">
+        <button class="btn-ghost" id="qrRefreshBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh Screenshot
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TOAST NOTIFICATION ═══════ -->
+<div class="toast hidden" id="toast" role="alert" aria-live="polite"></div>
+
+<!-- SocketIO client -->
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js" crossorigin="anonymous"></script>
+<script src="/app.js"></script>
+</body>
+</html>
